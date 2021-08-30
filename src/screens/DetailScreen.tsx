@@ -1,9 +1,13 @@
 import React from 'react';
 
 import { StackScreenProps } from '@react-navigation/stack';
-import { ScrollView, Image, StyleSheet, View, Dimensions, Text } from 'react-native';
+import { ScrollView, Image, StyleSheet, View, Dimensions, Text, ActivityIndicator } from 'react-native';
 
 import { RootStackParams } from '../nagivation/Navigation';
+
+
+import { useMoviesDetails } from '../hooks/useMoviesDetails';
+import { MovieDetails } from '../components/MovieDetails';
 
 const { height: screenHeight } = Dimensions.get('screen');
 
@@ -14,9 +18,11 @@ export const DetailScreen = ( { route }: Props ) => {
     const movie = route.params;
     const uri = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
-    return (
+    const { isLoading, cast, movieFull } = useMoviesDetails( movie.id );
 
+    return (
         <ScrollView>
+
             <View style={ styles.imageContainer }>
                 <View style={ styles.imageBorder } >
                     <Image
@@ -30,6 +36,13 @@ export const DetailScreen = ( { route }: Props ) => {
                 <Text style={ styles.subTitle } >{ movie.original_title }</Text>
                 <Text style={ styles.title } >{ movie.title }</Text>
             </View>
+
+            {
+                ( isLoading ) 
+                    ? <ActivityIndicator size={ 30 } color="grey" style={{ marginTop: 20 }} />
+                    : <MovieDetails movieFull={ movieFull! } cast={ cast } />
+            }
+
         </ScrollView>
     )
 }
@@ -71,4 +84,4 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold'
     }
-})
+});
